@@ -1,6 +1,8 @@
 package com.example.shemajamebeli5
 
+import android.text.TextUtils
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -13,18 +15,32 @@ class ChatRecycleAdapter : ListAdapter<UserInformation, ChatRecycleAdapter.ChatI
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(userInformation: UserInformation) {
-            binding.userName.text = userInformation.owner
-            binding.lastMessageTime.text = userInformation.lastActive
+            binding.apply {
+                userName.text = userInformation.owner
+                lastMessageTime.text = userInformation.lastActive
 
-            when (userInformation.itemType) {
-                UserInformation.ItemType.TEXT -> {
-                    binding.userLastMessage.text = userInformation.lastMessage
+                // Set last message text and handle ellipsis
+                userLastMessage.text = userInformation.lastMessage
+                userLastMessage.ellipsize = TextUtils.TruncateAt.END
+                userLastMessage.maxLines = 1
+
+                // Set unread messages count
+                if (userInformation.unreadMessages > 0) {
+                    unreadMessages.text = userInformation.unreadMessages.toString()
+                    unreadMessages.visibility = View.VISIBLE
+                } else {
+                    unreadMessages.visibility = View.GONE
                 }
-                UserInformation.ItemType.FILE -> {
-                    binding.userLastMessage.text = "Sent a File"
-                }
-                UserInformation.ItemType.VOICE -> {
-                    binding.userLastMessage.text = "Sent a Voice Message"
+                when (userInformation.itemType) {
+                    UserInformation.ItemType.TEXT -> {
+                        binding.userLastMessage.text = userInformation.lastMessage
+                    }
+                    UserInformation.ItemType.FILE -> {
+                        binding.userLastMessage.text = "Sent a File"
+                    }
+                    UserInformation.ItemType.VOICE -> {
+                        binding.userLastMessage.text = "Sent a Voice Message"
+                    }
                 }
             }
         }
